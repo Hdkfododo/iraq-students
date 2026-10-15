@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طلاب العراق - المنصة التعليمية المتكاملة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- ربط ملف التصميم المستقل -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- مكتبة Supabase للاتصال السحابي -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- ☰ القائمة الجانبية المدمجة -->
+    <button class="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="overlay-bg" id="overlayBg" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar-menu" id="sidebarMenu">
+        <h3>🧭 الأقسام الرئيسية</h3>
+        <button onclick="navigateTo('page-home')">🏠 الصفحة الرئيسية والأخبار</button>
+        <button onclick="navigateTo('page-login')">👤 حساب الطالب وتسجيل الدخول</button>
+        <button onclick="navigateTo('page-pdf')">📚 مكتبة الملازم والوزاريات</button>
+        <button onclick="navigateTo('page-services')">🎓 الخدمات وحاسبة المعدل</button>
+        <button onclick="navigateTo('page-chat')">💬 الشات العام للطلاب</button>
+        <button onclick="navigateTo('page-plans')">💎 خطط الاشتراكات (بلس وبرو)</button>
+        <button onclick="navigateTo('page-info')">📌 القرارات والاتصال بالمالك</button>
+        <hr style="border-color:var(--border); margin:0.4rem 0;">
+        <button onclick="navigateTo('page-owner')" style="color: var(--gold); border: 1px dashed var(--gold);">🔐 لوحة تحكم المالك الخاصة</button>
+        <button class="btn" style="margin-top: 0.4rem;" onclick="toggleTheme()">🌙 / ☀️ تبديل الوضع</button>
+    </div>
+
+    <header>
+        <h1>🎓 موقع طلاب العراق 🇮🇶</h1>
+        <p>المنصة الرسمية للخدمات الطلابية والملازم الشاملة</p>
+    </header>
+
+    <div class="container">
+
+        <!-- 🏠 1. الصفحة الرئيسية والأخبار -->
+        <div id="page-home" class="page-section active-page">
+            <div class="card">
+                <div class="toast-banner">
+                    <span>📢 أهلاً بك! تابع أخبار المنصة وأخبار التربية والتعليم الرسمية أدناه.</span>
+                    <span style="cursor: pointer;" onclick="this.parentElement.style.display='none'">✕</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">⏳ المتبقي على بدء الامتحانات الوزارية القادمة</h2>
+                <div class="countdown-grid">
+                    <div class="countdown-box"><h3 id="cd-days">42</h3><span>يوم</span></div>
+                    <div class="countdown-box"><h3 id="cd-hours">14</h3><span>ساعة</span></div>
+                    <div class="countdown-box"><h3 id="cd-mins">25</h3><span>دقيقة</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">📰 لوحة الإعلانات والأخبار الرسمية</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">آخر مستجدات وزارة التربية وإدارة المنصة:</p>
+                <div id="homeAnnouncementsList"></div>
+            </div>
+
+            <h3 style="margin-bottom:0.8rem; color:var(--primary);">🚀 التصفح السريع:</h3>
+            <div class="quick-nav-grid">
+                <div class="nav-card" onclick="navigateTo('page-login')">
+                    <h3>👤 حساب الطالب</h3>
+                    <p>تسجيل الدخول والبريد</p>
+                </div>
+                <div class="nav-card" onclick="navigateTo('page-pdf')">
+                    <h3>📚 مكتبة الملازم</h3>
+                    <p>تحميل مباشر لجميع المراحل</p>
+                </div>
+                <div class="nav-card" onclick="navigateTo('page-services')">
+                    <h3>🎓 الحاسبة والذكاء</h3>
+                    <p>حساب المعدل والمدرس الذكي</p>
+                </div>
+                <div class="nav-card" onclick="navigateTo('page-plans')">
+                    <h3>💎 خطط الاشتراكات</h3>
+                    <p>بلس وبرو وباقي العروض</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 👤 2. صفحة تسجيل دخول الطالب وحسابه -->
+        <div id="page-login" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span id="authCardTitle">👤 تسجيل الدخول إلى حسابك</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+
+                <div id="loginFormSection">
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">البريد الإلكتروني:</label>
+                    <input type="email" id="loginEmail" placeholder="example@gmail.com" />
+
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">كلمة المرور:</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" />
+
+                    <button class="btn btn-success" style="width: 100%; margin-top:0.5rem;" onclick="loginStudent()">تسجيل الدخول</button>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                        <button class="btn-link" onclick="switchAuthView('register')">ليس لديك حساب؟ سجل الآن</button>
+                        <button class="btn-link" onclick="switchAuthView('forgot')">هل نسيت كلمة المرور؟</button>
+                    </div>
+                </div>
+
+                <div id="registerFormSection" class="hidden">
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">الاسم الكامل أو اللقب:</label>
+                    <input type="text" id="regName" placeholder="مثال: علي الحلي..." />
+
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">البريد الإلكتروني:</label>
+                    <input type="email" id="regEmail" placeholder="example@gmail.com" />
+
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">كلمة المرور:</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" />
+                    
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">رقم الهاتف (لاستعادة كلمة المرور):</label>
+                    <input type="text" id="regPhone" placeholder="07700000000" />
+                    
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">المرحلة الدراسية:</label>
+                    <select id="regRole">
+                        <option value="طالب سادس">🎓 طالب سادس إعدادي</option>
+                        <option value="طالب ثالث">📚 طالب ثالث متوسط</option>
+                        <option value="طالب متميز">🌟 طالب متميز</option>
+                        <option value="طالب ابتدائي">✏️ طالب ابتدائي</option>
+                    </select>
+
+                    <button class="btn btn-success" style="width: 100%; margin-top:0.5rem;" onclick="registerNewStudent()">إنشاء الحساب الان</button>
+                    <button class="btn-link" style="display: block; margin: 1rem auto 0 auto;" onclick="switchAuthView('login')">لديك حساب بالفعل؟ سجل دخولك</button>
+                </div>
+
+                <div id="forgotFormSection" class="hidden">
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">أدخل بريدك الإلكتروني أو رقم هاتفك المسجل لنرسل لك كلمة المرور الخاصة بحسابك:</p>
+                    <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">البريد الإلكتروني أو رقم الهاتف:</label>
+                    <input type="text" id="forgotInput" placeholder="name@email.com أو 077..." />
+                    
+                    <button class="btn" style="width: 100%; margin-top:0.5rem;" onclick="sendRecoveryCode()">استعادة كلمة المرور</button>
+                    <button class="btn-link" style="display: block; margin: 1rem auto 0 auto;" onclick="switchAuthView('login')">العودة لتسجيل الدخول</button>
+                </div>
+
+                <div id="userProfileBar" class="hidden" style="background-color: var(--bg-main); padding: 1.2rem; border-radius: 12px; border:1px solid var(--border);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap:1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.9rem;">
+                            <img id="userAvatarImg" src="https://api.dicebear.com/7.x/bottts/svg?seed=Student" class="avatar-preview" style="width:55px; height:55px;" />
+                            <div>
+                                <h3 id="userNameDisplay" style="color: var(--primary);"></h3>
+                                <p id="userEmailDisplay" style="font-size: 0.8rem; color: var(--text-muted);"></p>
+                                <div>
+                                    <span id="userRoleBadge" class="role-badge"></span>
+                                    <span id="userPlanBadge" class="plan-badge badge-free">مجاني</span>
+                                </div>
+                                <span style="font-size: 0.78rem; color: #10b981; margin-top: 0.2rem; display:block;">● الحساب نشط ومتصل بالسيرفر</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger" onclick="logoutStudent()">تسجيل الخروج</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📚 3. مكتبة الملازم الشاملة -->
+        <div id="page-pdf" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>📚 مكتبة الملازم والأسئلة الوزارية الشاملة (PDF)</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+
+                <h4 style="color:var(--primary); margin-bottom:0.5rem;">🎓 السادس العلمي (الإعدادي)</h4>
+                <div class="pdf-grid">
+                    <div class="pdf-card"><h5>📐 الرياضيات</h5><p>الأستاذ حيدر وليد</p><a href="https://mlazemna.com/6th-math-hw/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                    <div class="pdf-card"><h5>📖 قواعد اللغة العربية</h5><p>الأستاذ عقيل الزبيدي</p><a href="https://mlazemna.com/6th-arabic/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                    <div class="pdf-card"><h5>🧪 الكيمياء</h5><p>الأستاذ هاشم الغرباوي</p><a href="https://mlazemna.com/6th-chem/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                    <div class="pdf-card"><h5>⚡ الفيزياء</h5><p>الأستاذ مؤيد سليم</p><a href="https://mlazemna.com/6th-physics/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                </div>
+
+                <h4 style="color:var(--primary); margin:1.5rem 0 0.5rem 0;">📚 السادس الأدبي</h4>
+                <div class="pdf-grid">
+                    <div class="pdf-card"><h5>📜 التاريخ الحديث</h5><p>الأستاذ مضر الجبوري</p><a href="https://mlazemna.com/6th-history/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                    <div class="pdf-card"><h5>🌍 الجغرافية العامة</h5><p>الأستاذ عباس العامري</p><a href="https://mlazemna.com/6th-geo/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                </div>
+
+                <h4 style="color:var(--primary); margin:1.5rem 0 0.5rem 0;">📚 الثالث المتوسط</h4>
+                <div class="pdf-grid">
+                    <div class="pdf-card"><h5>📐 رياضيات الثالث</h5><p>المنهج الشامل</p><a href="https://mlazemna.com/3rd-math/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                    <div class="pdf-card"><h5>🧪 إسلامية وعربي</h5><p>مراجعة مركزة</p><a href="https://mlazemna.com/3rd-islamic/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                </div>
+
+                <h4 style="color:var(--primary); margin:1.5rem 0 0.5rem 0;">✏️ السادس الابتدائي</h4>
+                <div class="pdf-grid">
+                    <div class="pdf-card"><h5>📘 إسلامية واجتماعيات</h5><p>الوزاريات الرسمية</p><a href="https://mlazemna.com/6th-primary/" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🎓 4. الخدمات (الحاسبة والمدرس الذكي) -->
+        <div id="page-services" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>🎓 حاسبة المعدل ودليل القبول الجامعي</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-bottom: 0.6rem;">
+                    <input type="number" id="m1" placeholder="إسلامية" />
+                    <input type="number" id="m2" placeholder="عربي" />
+                    <input type="number" id="m3" placeholder="إنكليزي" />
+                    <input type="number" id="m4" placeholder="رياضيات" />
+                </div>
+                <button class="btn btn-success" style="width: 100%; margin-bottom: 0.8rem;" onclick="calculateAvg()">حساب المعدل الان</button>
+                <p id="avgResult" style="font-weight: 800; color: var(--primary); text-align: center; font-size: 1rem; margin-bottom: 0.8rem;"></p>
+
+                <hr style="border-color:var(--border); margin:0.8rem 0;">
+
+                <label style="font-size:0.85rem; font-weight:bold; margin-bottom:0.3rem; display:block;">توقع القبول الجامعي:</label>
+                <input type="number" id="predictAvgInput" placeholder="أدخل معدلك التقديري..." />
+                <select id="predictBranchSelect">
+                    <option value="علمي">الفرع العلمي</option>
+                    <option value="أدبي">الفرع الأدبي</option>
+                </select>
+                <button class="btn btn-success" style="width: 100%;" onclick="predictCollege()">توقع الكلية المتاحة</button>
+                <p id="predictResult" style="margin-top: 0.8rem; font-weight: 700; color: var(--primary); font-size: 0.88rem;"></p>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">🤖 المدرس الذكي (الذكاء الاصطناعي الفوري)</h3>
+                <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 0.8rem;">اسأل أي مسألة رياضية (جمع، طرح، ضرب، قسمة) وسيقوم بحسابها وشرحها لك فوراً!</p>
+                <input type="text" id="aiQuestionInput" placeholder="مثال: كم ناتج 45 تقسيم 5 أو 12 * 8..." />
+                <button class="btn btn-success" style="width:100%; margin-bottom:0.8rem;" onclick="askAiTeacher()">توليد الإجابة والشرح</button>
+                <div id="aiResponseBox" class="hidden" style="background:var(--bg-main); padding:0.9rem; border-radius:8px; border:1px solid var(--primary); font-size:0.88rem;">
+                    <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">💡 الشرح والحل:</strong>
+                    <p id="aiResponseText" style="white-space: pre-line;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 💬 5. الشات العام -->
+        <div id="page-chat" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>💬 الشات العام لطلاب العراق (سحابي حقيقي)</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+
+                <div class="chat-box" id="chatBox">
+                    <div class="chat-message">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Admin" class="avatar-preview" />
+                        <div class="chat-message-content">
+                            <div><span class="user-name">إدارة المنصة</span><span class="role-badge" style="background-color: #e11d48;">👑 المالك</span></div>
+                            <p style="margin-top: 0.3rem; font-size:0.9rem;">أهلاً بكافة الطلاب! يمكنك كتابة رسائلك والتواصل الفوري هنا.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chatInputArea">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="chatMessageInput" placeholder="اكتب رسالتك للطلاب هنا..." style="margin-bottom: 0;" />
+                        <button class="btn btn-success" onclick="sendMessage()">إرسال</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 💎 6. خطط الاشتراكات -->
+        <div id="page-plans" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>💎 خطط الاشتراكات وتطوير الميزات</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+                <div class="pricing-grid">
+                    <div class="price-card">
+                        <div>
+                            <h4>الخطة المجانية</h4>
+                            <div class="cost">0 د.ع</div>
+                            <ul><li>✔️ تصفح الملازم الأساسية</li><li>✔️ حاسبة المعدل والشات</li></ul>
+                        </div>
+                        <button class="btn" disabled>مفعلة تلقائياً</button>
+                    </div>
+                    <div class="price-card featured">
+                        <span class="price-badge">الأكثر طلباً</span>
+                        <div>
+                            <h4>خطة طالب بلس</h4>
+                            <div class="cost">5,000 د.ع / شهرياً</div>
+                            <ul><li>⭐ امتحانات وزارية إضافية</li><li>⭐ تقارير إنجاز تفصيلية</li></ul>
+                        </div>
+                        <button class="btn btn-whatsapp" style="width:100%;" onclick="openWhatsApp('طالب بلس (5,000 د.ع)')">اشترك عبر الواتساب ⭐</button>
+                    </div>
+                    <div class="price-card">
+                        <div>
+                            <h4>خطة طالب برو</h4>
+                            <div class="cost">10,000 د.ع / شهرياً</div>
+                            <ul><li>🚀 المدرس الذكي المتقدم</li><li>🚀 أولوية الدعم الفوري</li></ul>
+                        </div>
+                        <button class="btn btn-whatsapp" style="width:100%;" onclick="openWhatsApp('طالب برو (10,000 د.ع)')">اشترك عبر الواتساب 🚀</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📌 7. المعلومات والتواصل -->
+        <div id="page-info" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>📌 القرارات والتعليمات الوزارية</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+                <div id="infoAnnouncementsList">
+                    <div class="announcement-post post-education">
+                        <h4 style="color:var(--primary); margin-bottom:0.3rem;">جدول الامتحانات</h4>
+                        <p style="font-size:0.9rem;">تقرر رسمياً اعتماد التعليمات الصادرة من وزارة التربية العراقية.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">💬 التواصل الفوري المباشر مع المالك</h3>
+                <div style="background-color: var(--bg-main); padding:1.2rem; border-radius:10px; text-align:center;">
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">هل لديك استفسار أو تريد تفعيل أحد الاشتراكات؟ تواصل مع المالك فوراً:</p>
+                    <button class="btn btn-whatsapp" style="width:100%; padding:0.8rem;" onclick="openWhatsApp('استفسار من طالب على الموقع')">📱 مراسلة المالك على الواتساب الآن</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔐 8. لوحة تحكم المالك الشاملة -->
+        <div id="page-owner" class="page-section">
+            <div class="card" style="border-color: #f59e0b;">
+                <div class="card-title">
+                    <span style="color: var(--gold);">🔐 لوحة تحكم المالك الحصرية والصلاحيات الكاملة</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+                <div id="ownerAuthBox">
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.8rem;">أدخل كلمة المرور السرية للتحكم بالكامل بالمنصة ونشر الأخبار وترقية حسابات الطلاب:</p>
+                    <input type="password" id="ownerPasswordInput" placeholder="كلمة السر الخاصة بالمالك..." />
+                    <button class="btn" style="background-color: var(--gold); color: #000; font-weight: bold; width:100%;" onclick="unlockOwnerPanel()">فتح لوحة التحكم الحصرية</button>
+                </div>
+                <div id="ownerPublishForm" class="hidden">
+                    <div class="owner-admin-panel">
+                        <h4 style="color: var(--gold); margin-bottom: 1rem;">👑 أهلاً بك يا مالك المنصة (تحكم كامل):</h4>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="font-size:0.85rem; color:var(--text); display:block; margin-bottom:0.3rem;">📢 نشر خبر أو إعلان جديد:</label>
+                            <select id="newsCategorySelect">
+                                <option value="platform">📢 خبر يخص المنصة والطلاب</option>
+                                <option value="education">🏛️ خبر يخص التربية والتعليم</option>
+                            </select>
+                            <input type="text" id="decisionTitle" placeholder="عنوان الخبر..." style="margin-top:0.4rem;" />
+                            <textarea id="decisionText" rows="3" placeholder="تفاصيل الخبر الرسمية..."></textarea>
+                            <button class="btn" style="background-color: var(--gold); color:#000; width:100%;" onclick="addDecision()">نشر الخبر في الصفحة الرئيسية</button>
+                        </div>
+
+                        <hr style="border-color:var(--border); margin:1.2rem 0;">
+
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="font-size:0.85rem; color:var(--text); display:block; margin-bottom:0.3rem;">⭐ / 🚀 ترقية حساب أي طالب فوراً عبر بريده:</label>
+                            <input type="text" id="upgradeStudentEmail" placeholder="البريد الإلكتروني للطالب المراد ترقيته..." />
+                            <select id="upgradePlanSelect">
+                                <option value="plus">ترقية إلى طالب بلس ⭐ (5,000 د.ع)</option>
+                                <option value="pro">ترقية إلى طالب برو 🚀 (10,000 د.ع)</option>
+                                <option value="free">إعادة إلى الخطة المجانية 📄</option>
+                            </select>
+                            <button class="btn btn-success" style="width:100%;" onclick="ownerUpgradeStudent()">تفعيل الاشتراك للطالب فوراً</button>
+                        </div>
+
+                        <button class="btn btn-danger" style="width: 100%; margin-top: 0.5rem;" onclick="lockOwnerPanel()">قفل وخروج من اللوحة</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 - موقع طلاب العراق 🇮🇶</p>
+    </footer>
+
+    <!-- ربط ملف البرمجة والوظائف المستقل -->
+    <script src="script.js"></script>
+</body>
+</html>
