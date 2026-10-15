@@ -52,7 +52,6 @@ function applyLanguage() {
     document.documentElement.lang = currentLang;
     document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
     
-    // ترجمة الهيدر والقائمة الجانبية بالكامل
     const elements = {
         'siteMainTitle': t.siteTitle,
         'siteSubTitle': t.siteSub,
@@ -117,7 +116,6 @@ window.addEventListener('DOMContentLoaded', () => {
     checkActivePushNotification();
 });
 
-// 🔔 نظام الإشعارات الفورية
 function sendPushNotificationFromOwner() {
     const title = document.getElementById('decisionTitle').value.trim();
     const text = document.getElementById('decisionText').value.trim();
@@ -150,7 +148,6 @@ function closeNotification() {
     document.getElementById('pushNotificationBox').classList.add('hidden');
 }
 
-// 📤 نظام قسم "شارك ملزمتك" والموافقة من المالك
 function submitStudentPDF() {
     const title = document.getElementById('shareTitleInput').value.trim();
     const url = document.getElementById('shareUrlInput').value.trim();
