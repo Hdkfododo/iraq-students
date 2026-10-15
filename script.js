@@ -6,18 +6,78 @@ const WHATSAPP_USERNAME = "DS13A";
 let currentStudent = null;
 let currentLang = localStorage.getItem('siteLang') || 'ar';
 
+let currentLang = localStorage.getItem('siteLang') || 'ar';
+
 const translations = {
     ar: {
         siteTitle: "موقع طلاب العراق 🇮🇶",
         siteSub: "المنصة الرسمية للخدمات الطلابية والملازم الشاملة",
-        navHeader: "🧭 الأقسام الرئيسية"
+        navHeader: "🧭 الأقسام الرئيسية",
+        menuHome: "🏠 الصفحة الرئيسية والأخبار",
+        menuLogin: "👤 حساب الطالب وتسجيل الدخول",
+        menuPdf: "📚 مكتبة الملازم والوزاريات",
+        menuShare: "📤 شارك ملزمتك مع الطلاب",
+        menuServices: "🎓 الخدمات وحاسبة المعدل",
+        menuChat: "💬 الشات العام للطلاب",
+        menuPlans: "💎 خطط الاشتراكات (بلس وبرو)",
+        menuInfo: "📌 القرارات والاتصال بالمالك",
+        menuOwner: "🔐 لوحة تحكم المالك الخاصة",
+        menuTheme: "🌙 / ☀️ تبديل الوضع",
+        menuLang: "🌐 العربية / English"
     },
     en: {
         siteTitle: "Iraq Students Portal 🇮🇶",
         siteSub: "The Official Platform for Student Services & Comprehensive PDFs",
-        navHeader: "🧭 Main Navigation"
+        navHeader: "🧭 Main Navigation",
+        menuHome: "🏠 Home & News",
+        menuLogin: "👤 Student Account & Login",
+        menuPdf: "📚 PDFs & Ministerial Library",
+        menuShare: "📤 Share Your PDF",
+        menuServices: "🎓 Services & GPA Calculator",
+        menuChat: "💬 Public Student Chat",
+        menuPlans: "💎 Subscription Plans (Plus & Pro)",
+        menuInfo: "📌 Decisions & Contact Owner",
+        menuOwner: "🔐 Owner Dashboard",
+        menuTheme: "🌙 / ☀️ Toggle Theme",
+        menuLang: "🌐 English / العربية"
     }
 };
+
+function toggleLanguage() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('siteLang', currentLang);
+    applyLanguage();
+}
+
+function applyLanguage() {
+    const t = translations[currentLang];
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    
+    // ترجمة الهيدر والقائمة الجانبية
+    const elements = {
+        'siteMainTitle': t.siteTitle,
+        'siteSubTitle': t.siteSub,
+        'navHeaderTitle': t.navHeader,
+        'menuHome': t.menuHome,
+        'menuLogin': t.menuLogin,
+        'menuPdf': t.menuPdf,
+        'menuShare': t.menuShare,
+        'menuServices': t.menuServices,
+        'menuChat': t.menuChat,
+        'menuPlans': t.menuPlans,
+        'menuInfo': t.menuInfo,
+        'menuOwner': t.menuOwner,
+        'menuTheme': t.menuTheme,
+        'menuLang': t.menuLang
+    };
+
+    for (let id in elements) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = elements[id];
+    }
+}
+
 
 function navigateTo(pageId) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active-page'));

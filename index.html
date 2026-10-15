@@ -14,21 +14,22 @@
     <button class="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
     <div class="overlay-bg" id="overlayBg" onclick="toggleSidebar()"></div>
 
-    <div class="sidebar-menu" id="sidebarMenu">
-        <h3 id="navHeaderTitle">🧭 الأقسام الرئيسية</h3>
-        <button onclick="navigateTo('page-home')">🏠 الصفحة الرئيسية والأخبار</button>
-        <button onclick="navigateTo('page-login')">👤 حساب الطالب وتسجيل الدخول</button>
-        <button onclick="navigateTo('page-pdf')">📚 مكتبة الملازم والوزاريات</button>
-        <button onclick="navigateTo('page-share')">📤 شارك ملزمتك مع الطلاب</button>
-        <button onclick="navigateTo('page-services')">🎓 الخدمات وحاسبة المعدل</button>
-        <button onclick="navigateTo('page-chat')">💬 الشات العام للطلاب</button>
-        <button onclick="navigateTo('page-plans')">💎 خطط الاشتراكات (بلس وبرو)</button>
-        <button onclick="navigateTo('page-info')">📌 القرارات والاتصال بالمالك</button>
-        <hr style="border-color:var(--border); margin:0.4rem 0;">
-        <button onclick="navigateTo('page-owner')" style="color: var(--gold); border: 1px dashed var(--gold);">🔐 لوحة تحكم المالك الخاصة</button>
-        <button class="btn" style="margin-top: 0.4rem;" onclick="toggleTheme()">🌙 / ☀️ تبديل الوضع</button>
-        <button class="btn" style="margin-top: 0.4rem; background-color: var(--primary-dark);" onclick="toggleLanguage()">🌐 العربية / English</button>
-    </div>
+<div class="sidebar-menu" id="sidebarMenu">
+    <h3 id="navHeaderTitle">🧭 الأقسام الرئيسية</h3>
+    <button id="menuHome" onclick="navigateTo('page-home')">🏠 الصفحة الرئيسية والأخبار</button>
+    <button id="menuLogin" onclick="navigateTo('page-login')">👤 حساب الطالب وتسجيل الدخول</button>
+    <button id="menuPdf" onclick="navigateTo('page-pdf')">📚 مكتبة الملازم والوزاريات</button>
+    <button id="menuShare" onclick="navigateTo('page-share')">📤 شارك ملزمتك مع الطلاب</button>
+    <button id="menuServices" onclick="navigateTo('page-services')">🎓 الخدمات وحاسبة المعدل</button>
+    <button id="menuChat" onclick="navigateTo('page-chat')">💬 الشات العام للطلاب</button>
+    <button id="menuPlans" onclick="navigateTo('page-plans')">💎 خطط الاشتراكات (بلس وبرو)</button>
+    <button id="menuInfo" onclick="navigateTo('page-info')">📌 القرارات والاتصال بالمالك</button>
+    <hr style="border-color:var(--border); margin:0.4rem 0;">
+    <button id="menuOwner" onclick="navigateTo('page-owner')" style="color: var(--gold); border: 1px dashed var(--gold);">🔐 لوحة تحكم المالك الخاصة</button>
+    <button id="menuTheme" class="btn" style="margin-top: 0.4rem;" onclick="toggleTheme()">🌙 / ☀️ تبديل الوضع</button>
+    <button id="menuLang" class="btn" style="margin-top: 0.4rem; background-color: var(--primary-dark);" onclick="toggleLanguage()">🌐 العربية / English</button>
+</div>
+
 
     <header>
         <h1 id="siteMainTitle">🎓 موقع طلاب العراق 🇮🇶</h1>
