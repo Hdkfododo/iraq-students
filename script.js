@@ -361,3 +361,60 @@ function appendChatMessage(name, role, avatar, text, plan) {
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+// 🌐 نظام دعم اللغة (العربية والإنجليزية)
+let currentLang = localStorage.getItem('siteLang') || 'ar';
+
+const translations = {
+    ar: {
+        siteTitle: "موقع طلاب العراق 🇮🇶",
+        siteSub: "المنصة الرسمية للخدمات الطلابية والملازم الشاملة",
+        homeBtn: "🏠 الصفحة الرئيسية والأخبار",
+        loginBtn: "👤 حساب الطالب وتسجيل الدخول",
+        pdfBtn: "📚 مكتبة الملازم والوزاريات",
+        servicesBtn: "🎓 الخدمات وحاسبة المعدل",
+        chatBtn: "💬 الشات العام للطلاب",
+        plansBtn: "💎 خطط الاشتراكات (بلس وبرو)",
+        infoBtn: "📌 القرارات والاتصال بالمالك",
+        ownerBtn: "🔐 لوحة تحكم المالك الخاصة",
+        themeBtn: "🌙 / ☀️ تبديل الوضع",
+        langBtn: "🌐 العربية / English"
+    },
+    en: {
+        siteTitle: "Iraq Students Portal 🇮🇶",
+        siteSub: "The Official Platform for Student Services & Comprehensive PDFs",
+        homeBtn: "🏠 Home & News",
+        loginBtn: "👤 Student Account & Login",
+        pdfBtn: "📚 PDFs & Ministerial Library",
+        servicesBtn: "🎓 Services & GPA Calculator",
+        chatBtn: "💬 Public Student Chat",
+        plansBtn: "💎 Subscription Plans (Plus & Pro)",
+        infoBtn: "📌 Decisions & Contact Owner",
+        ownerBtn: "🔐 Owner Dashboard",
+        themeBtn: "🌙 / ☀️ Toggle Theme",
+        langBtn: "🌐 English / العربية"
+    }
+};
+
+function toggleLanguage() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('siteLang', currentLang);
+    applyLanguage();
+}
+
+function applyLanguage() {
+    const t = translations[currentLang];
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    
+    // تحديث النصوص الرئيسية بسلاسة
+    const headerTitle = document.querySelector('header h1');
+    const headerSub = document.querySelector('header p');
+    if(headerTitle) headerTitle.innerText = t.siteTitle;
+    if(headerSub) headerSub.innerText = t.siteSub;
+}
+
+// تنفيذ اللغة عند تحميل الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+    applyLanguage();
+});
