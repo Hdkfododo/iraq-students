@@ -6,8 +6,6 @@ const WHATSAPP_USERNAME = "DS13A";
 let currentStudent = null;
 let currentLang = localStorage.getItem('siteLang') || 'ar';
 
-let currentLang = localStorage.getItem('siteLang') || 'ar';
-
 const translations = {
     ar: {
         siteTitle: "موقع طلاب العراق 🇮🇶",
@@ -54,7 +52,7 @@ function applyLanguage() {
     document.documentElement.lang = currentLang;
     document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
     
-    // ترجمة الهيدر والقائمة الجانبية
+    // ترجمة الهيدر والقائمة الجانبية بالكامل
     const elements = {
         'siteMainTitle': t.siteTitle,
         'siteSubTitle': t.siteSub,
@@ -78,7 +76,6 @@ function applyLanguage() {
     }
 }
 
-
 function navigateTo(pageId) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active-page'));
     document.getElementById(pageId).classList.add('active-page');
@@ -96,26 +93,6 @@ function toggleTheme() {
     document.body.classList.toggle('light-mode');
     const isLight = document.body.classList.contains('light-mode');
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
-}
-
-function toggleLanguage() {
-    currentLang = currentLang === 'ar' ? 'en' : 'ar';
-    localStorage.setItem('siteLang', currentLang);
-    applyLanguage();
-}
-
-function applyLanguage() {
-    const t = translations[currentLang];
-    document.documentElement.lang = currentLang;
-    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-    
-    const titleEl = document.getElementById('siteMainTitle');
-    const subEl = document.getElementById('siteSubTitle');
-    const navHeaderEl = document.getElementById('navHeaderTitle');
-    
-    if(titleEl) titleEl.innerText = t.siteTitle;
-    if(subEl) subEl.innerText = t.siteSub;
-    if(navHeaderEl) navHeaderEl.innerText = t.navHeader;
 }
 
 function openWhatsApp(msgDetails) {
