@@ -198,16 +198,26 @@ header p {
 .nav-card h3 { color: var(--primary); font-size: 1.05rem; margin-bottom: 0.3rem; }
 .nav-card p { font-size: 0.8rem; color: var(--text-muted); }
 
-.toast-banner {
-    background: linear-gradient(90deg, #0284c7, #10b981);
-    color: white;
-    padding: 0.8rem 1.2rem;
+/* 🔔 تصميم نظام الإشعارات الفورية */
+.push-notification-banner {
+    background: linear-gradient(90deg, #f59e0b, #ef4444);
+    color: #ffffff;
+    padding: 0.9rem 1.2rem;
     border-radius: 12px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     font-weight: bold;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    margin-bottom: 1rem;
+    animation: fadeIn 0.4s ease-in-out;
+}
+.push-notification-banner.hidden { display: none !important; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .pricing-grid {

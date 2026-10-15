@@ -5,24 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>طلاب العراق - المنصة التعليمية المتكاملة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- ربط ملف التصميم المستقل -->
     <link rel="stylesheet" href="style.css">
-    
-    <!-- مكتبة Supabase للاتصال السحابي -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-    <!-- ☰ القائمة الجانبية المدمجة -->
+    <!-- ☰ القائمة الجانبية -->
     <button class="menu-toggle-btn" onclick="toggleSidebar()">☰</button>
     <div class="overlay-bg" id="overlayBg" onclick="toggleSidebar()"></div>
 
     <div class="sidebar-menu" id="sidebarMenu">
-        <h3>🧭 الأقسام الرئيسية</h3>
+        <h3 id="navHeaderTitle">🧭 الأقسام الرئيسية</h3>
         <button onclick="navigateTo('page-home')">🏠 الصفحة الرئيسية والأخبار</button>
         <button onclick="navigateTo('page-login')">👤 حساب الطالب وتسجيل الدخول</button>
         <button onclick="navigateTo('page-pdf')">📚 مكتبة الملازم والوزاريات</button>
+        <button onclick="navigateTo('page-share')">📤 شارك ملزمتك مع الطلاب</button>
         <button onclick="navigateTo('page-services')">🎓 الخدمات وحاسبة المعدل</button>
         <button onclick="navigateTo('page-chat')">💬 الشات العام للطلاب</button>
         <button onclick="navigateTo('page-plans')">💎 خطط الاشتراكات (بلس وبرو)</button>
@@ -30,16 +27,24 @@
         <hr style="border-color:var(--border); margin:0.4rem 0;">
         <button onclick="navigateTo('page-owner')" style="color: var(--gold); border: 1px dashed var(--gold);">🔐 لوحة تحكم المالك الخاصة</button>
         <button class="btn" style="margin-top: 0.4rem;" onclick="toggleTheme()">🌙 / ☀️ تبديل الوضع</button>
-<!-- زر تبديل اللغة الجديد -->
-<button class="btn" style="margin-top: 0.4rem; background-color: var(--primary-dark);" onclick="toggleLanguage()">🌐 العربية / English</button>
+        <button class="btn" style="margin-top: 0.4rem; background-color: var(--primary-dark);" onclick="toggleLanguage()">🌐 العربية / English</button>
     </div>
 
     <header>
-        <h1>🎓 موقع طلاب العراق 🇮🇶</h1>
-        <p>المنصة الرسمية للخدمات الطلابية والملازم الشاملة</p>
+        <h1 id="siteMainTitle">🎓 موقع طلاب العراق 🇮🇶</h1>
+        <p id="siteSubTitle">المنصة الرسمية للخدمات الطلابية والملازم الشاملة</p>
     </header>
 
     <div class="container">
+
+        <!-- 🔔 شريط الإشعارات الفورية (Push Notification Banner) -->
+        <div id="pushNotificationBox" class="push-notification-banner hidden">
+            <div>
+                <span style="font-size:1.1rem; margin-left:0.4rem;">🔔</span>
+                <span id="pushNotificationText">إشعار عاجل من إدارة المنصة!</span>
+            </div>
+            <span style="cursor: pointer; font-size:1.1rem; margin-right: 0.8rem;" onclick="closeNotification()">✕</span>
+        </div>
 
         <!-- 🏠 1. الصفحة الرئيسية والأخبار -->
         <div id="page-home" class="page-section active-page">
@@ -71,6 +76,10 @@
                     <h3>👤 حساب الطالب</h3>
                     <p>تسجيل الدخول والبريد</p>
                 </div>
+                <div class="nav-card" onclick="navigateTo('page-share')">
+                    <h3>📤 شارك ملزمتك</h3>
+                    <p>رفع وتصفح مساهمات الطلاب</p>
+                </div>
                 <div class="nav-card" onclick="navigateTo('page-pdf')">
                     <h3>📚 مكتبة الملازم</h3>
                     <p>تحميل مباشر لجميع المراحل</p>
@@ -79,14 +88,10 @@
                     <h3>🎓 الحاسبة والذكاء</h3>
                     <p>حساب المعدل والمدرس الذكي</p>
                 </div>
-                <div class="nav-card" onclick="navigateTo('page-plans')">
-                    <h3>💎 خطط الاشتراكات</h3>
-                    <p>بلس وبرو وباقي العروض</p>
-                </div>
             </div>
         </div>
 
-        <!-- 👤 2. صفحة تسجيل دخول الطالب وحسابه -->
+        <!-- 👤 2. حساب الطالب -->
         <div id="page-login" class="page-section">
             <div class="card">
                 <div class="card-title">
@@ -163,7 +168,30 @@
             </div>
         </div>
 
-        <!-- 📚 3. مكتبة الملازم الشاملة -->
+        <!-- 📤 3. قسم "شارك ملزمتك" جديد للمجتمع الطلابي -->
+        <div id="page-share" class="page-section">
+            <div class="card">
+                <div class="card-title">
+                    <span>📤 قسم "شارك ملزمتك" ومساهمات الطلاب</span>
+                    <button class="back-home-btn" onclick="navigateTo('page-home')">🔙 الرئيسية</button>
+                </div>
+
+                <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:1rem;">هل لديك ملخص مميز أو ملزمة مفيدة للطلاب؟ شاركها هنا وسيقوم المالك بمراجعتها ونشرها فوراً ليستفيد منها الجميع!</p>
+
+                <div style="background-color: var(--bg-main); padding:1rem; border-radius:10px; border:1px solid var(--border); margin-bottom:1.5rem;">
+                    <h4 style="color:var(--primary); margin-bottom:0.6rem;">➕ إرسال ملزمة أو ملخص للمراجعة:</h4>
+                    <input type="text" id="shareTitleInput" placeholder="عنوان الملزمة أو الملخص (مثال: ملخص الفصل الثاني كيمياء)..." />
+                    <input type="text" id="shareUrlInput" placeholder="رابط التحميل المباشر (Google Drive, Telegram, أو غيرها)..." />
+                    <textarea id="shareDescInput" rows="2" placeholder="شرح أو ملاحظات عن الملزمة..."></textarea>
+                    <button class="btn btn-success" style="width:100%;" onclick="submitStudentPDF()">إرسال للمالك للموافقة والنشر 🚀</button>
+                </div>
+
+                <h3 style="color:var(--primary); margin-bottom:0.8rem;">📚 الملازم المعتمدة والمرفوعة من الطلاب:</h3>
+                <div id="approvedStudentPdfsList" class="pdf-grid"></div>
+            </div>
+        </div>
+
+        <!-- 📚 4. مكتبة الملازم والوزاريات -->
         <div id="page-pdf" class="page-section">
             <div class="card">
                 <div class="card-title">
@@ -198,7 +226,7 @@
             </div>
         </div>
 
-        <!-- 🎓 4. الخدمات (الحاسبة والمدرس الذكي) -->
+        <!-- 🎓 5. الخدمات والحاسبة -->
         <div id="page-services" class="page-section">
             <div class="card">
                 <div class="card-title">
@@ -238,7 +266,7 @@
             </div>
         </div>
 
-        <!-- 💬 5. الشات العام -->
+        <!-- 💬 6. الشات العام -->
         <div id="page-chat" class="page-section">
             <div class="card">
                 <div class="card-title">
@@ -265,7 +293,7 @@
             </div>
         </div>
 
-        <!-- 💎 6. خطط الاشتراكات -->
+        <!-- 💎 7. خطط الاشتراكات -->
         <div id="page-plans" class="page-section">
             <div class="card">
                 <div class="card-title">
@@ -302,7 +330,7 @@
             </div>
         </div>
 
-        <!-- 📌 7. المعلومات والتواصل -->
+        <!-- 📌 8. المعلومات والتعليمات -->
         <div id="page-info" class="page-section">
             <div class="card">
                 <div class="card-title">
@@ -326,7 +354,7 @@
             </div>
         </div>
 
-        <!-- 🔐 8. لوحة تحكم المالك الشاملة -->
+        <!-- 🔐 9. لوحة تحكم المالك وتضمين قبول الملازم والإشعارات -->
         <div id="page-owner" class="page-section">
             <div class="card" style="border-color: #f59e0b;">
                 <div class="card-title">
@@ -342,19 +370,32 @@
                     <div class="owner-admin-panel">
                         <h4 style="color: var(--gold); margin-bottom: 1rem;">👑 أهلاً بك يا مالك المنصة (تحكم كامل):</h4>
                         
+                        <!-- نشر خبر أو إرسال إشعار فوري -->
                         <div style="margin-bottom: 1.5rem;">
-                            <label style="font-size:0.85rem; color:var(--text); display:block; margin-bottom:0.3rem;">📢 نشر خبر أو إعلان جديد:</label>
+                            <label style="font-size:0.85rem; color:var(--text); display:block; margin-bottom:0.3rem;">📢 نشر خبر أو إشعار فوري لجميع الطلاب:</label>
                             <select id="newsCategorySelect">
                                 <option value="platform">📢 خبر يخص المنصة والطلاب</option>
                                 <option value="education">🏛️ خبر يخص التربية والتعليم</option>
                             </select>
-                            <input type="text" id="decisionTitle" placeholder="عنوان الخبر..." style="margin-top:0.4rem;" />
-                            <textarea id="decisionText" rows="3" placeholder="تفاصيل الخبر الرسمية..."></textarea>
-                            <button class="btn" style="background-color: var(--gold); color:#000; width:100%;" onclick="addDecision()">نشر الخبر في الصفحة الرئيسية</button>
+                            <input type="text" id="decisionTitle" placeholder="عنوان الخبر أو الإشعار العاجل..." style="margin-top:0.4rem;" />
+                            <textarea id="decisionText" rows="3" placeholder="تفاصيل الخبر..."></textarea>
+                            <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
+                                <button class="btn" style="background-color: var(--gold); color:#000; flex:1;" onclick="addDecision()">نشر الخبر</button>
+                                <button class="btn btn-danger" style="flex:1;" onclick="sendPushNotificationFromOwner()">🔔 إرسال كـ إشعار عاجل فوراً</button>
+                            </div>
                         </div>
 
                         <hr style="border-color:var(--border); margin:1.2rem 0;">
 
+                        <!-- قسم المراجعة والموافقة على ملازم الطلاب -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="font-size:0.85rem; color:var(--text); display:block; margin-bottom:0.5rem; font-weight:bold;">📥 طلبات الملازم المرفوعة من الطلاب للمراجعة:</label>
+                            <div id="pendingPdfsOwnerList"></div>
+                        </div>
+
+                        <hr style="border-color:var(--border); margin:1.2rem 0;">
+
+                        <!-- ترقية الحسابات -->
                         <div style="margin-bottom: 1.5rem;">
                             <label style="font-size:0.85rem; color:var(--text); display:block; margin-bottom:0.3rem;">⭐ / 🚀 ترقية حساب أي طالب فوراً عبر بريده:</label>
                             <input type="text" id="upgradeStudentEmail" placeholder="البريد الإلكتروني للطالب المراد ترقيته..." />
@@ -378,7 +419,6 @@
         <p>جميع الحقوق محفوظة &copy; 2026 - موقع طلاب العراق 🇮🇶</p>
     </footer>
 
-    <!-- ربط ملف البرمجة والوظائف المستقل -->
     <script src="script.js"></script>
 </body>
 </html>

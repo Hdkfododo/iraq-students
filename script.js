@@ -4,6 +4,20 @@ const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_U
 const WHATSAPP_USERNAME = "DS13A"; 
 
 let currentStudent = null;
+let currentLang = localStorage.getItem('siteLang') || 'ar';
+
+const translations = {
+    ar: {
+        siteTitle: "موقع طلاب العراق 🇮🇶",
+        siteSub: "المنصة الرسمية للخدمات الطلابية والملازم الشاملة",
+        navHeader: "🧭 الأقسام الرئيسية"
+    },
+    en: {
+        siteTitle: "Iraq Students Portal 🇮🇶",
+        siteSub: "The Official Platform for Student Services & Comprehensive PDFs",
+        navHeader: "🧭 Main Navigation"
+    }
+};
 
 function navigateTo(pageId) {
     document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active-page'));
@@ -24,6 +38,26 @@ function toggleTheme() {
     localStorage.setItem('theme', isLight ? 'light' : 'dark');
 }
 
+function toggleLanguage() {
+    currentLang = currentLang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('siteLang', currentLang);
+    applyLanguage();
+}
+
+function applyLanguage() {
+    const t = translations[currentLang];
+    document.documentElement.lang = currentLang;
+    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+    
+    const titleEl = document.getElementById('siteMainTitle');
+    const subEl = document.getElementById('siteSubTitle');
+    const navHeaderEl = document.getElementById('navHeaderTitle');
+    
+    if(titleEl) titleEl.innerText = t.siteTitle;
+    if(subEl) subEl.innerText = t.siteSub;
+    if(navHeaderEl) navHeaderEl.innerText = t.navHeader;
+}
+
 function openWhatsApp(msgDetails) {
     const studentName = currentStudent ? currentStudent.name : 'طالب جديد';
     const fullMessage = encodeURIComponent(`مرحباً أستاذ، أنا (${studentName}) من موقع طلاب العراق، أرغب بالتواصل معك بخصوص: ${msgDetails}`);
@@ -32,6 +66,7 @@ function openWhatsApp(msgDetails) {
 
 window.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-mode');
+    applyLanguage();
     
     const savedStudent = localStorage.getItem('currentStudent');
     if (savedStudent) {
@@ -41,7 +76,131 @@ window.addEventListener('DOMContentLoaded', () => {
 
     loadStoredAnnouncements();
     fetchChatMessagesFromSupabase();
+    loadStudentPdfs();
+    checkActivePushNotification();
 });
+
+// 🔔 نظام الإشعارات الفورية
+function sendPushNotificationFromOwner() {
+    const title = document.getElementById('decisionTitle').value.trim();
+    const text = document.getElementById('decisionText').value.trim();
+    if(!title || !text) return alert('⚠️ أدخل عنوان وتفاصيل الإشعار أولاً!');
+
+    const notifData = { title, text, timestamp: Date.now() };
+    localStorage.setItem('activePushNotification', JSON.stringify(notifData));
+    
+    showPushBanner(title, text);
+    alert('🔔 تم إرسال الإشعار الفوري لجميع المترددين على الموقع بنجاح!');
+}
+
+function checkActivePushNotification() {
+    const notif = JSON.parse(localStorage.getItem('activePushNotification') || 'null');
+    if(notif) {
+        showPushBanner(notif.title, notif.text);
+    }
+}
+
+function showPushBanner(title, text) {
+    const box = document.getElementById('pushNotificationBox');
+    const txt = document.getElementById('pushNotificationText');
+    if(box && txt) {
+        txt.innerText = `${title}: ${text}`;
+        box.classList.remove('hidden');
+    }
+}
+
+function closeNotification() {
+    document.getElementById('pushNotificationBox').classList.add('hidden');
+}
+
+// 📤 نظام قسم "شارك ملزمتك" والموافقة من المالك
+function submitStudentPDF() {
+    const title = document.getElementById('shareTitleInput').value.trim();
+    const url = document.getElementById('shareUrlInput').value.trim();
+    const desc = document.getElementById('shareDescInput').value.trim();
+
+    if(!title || !url) return alert('⚠️ يرجى إدخال عنوان الملزمة ورابط التحميل!');
+
+    const studentName = currentStudent ? currentStudent.name : 'طالب مساهم';
+    const newPdf = {
+        id: Date.now(),
+        title,
+        url,
+        desc: desc || 'ملزمة مساهمة من الطالب',
+        author: studentName,
+        approved: false
+    };
+
+    let allPdfs = JSON.parse(localStorage.getItem('studentSharedPdfs') || '[]');
+    allPdfs.push(newPdf);
+    localStorage.setItem('studentSharedPdfs', JSON.stringify(allPdfs));
+
+    alert('✅ تم إرسال ملزمتك بنجاح! سيتم نشرها فور مراجعتها من قِبل مالك المنصة.');
+    document.getElementById('shareTitleInput').value = '';
+    document.getElementById('shareUrlInput').value = '';
+    document.getElementById('shareDescInput').value = '';
+}
+
+function loadStudentPdfs() {
+    const publicList = document.getElementById('approvedStudentPdfsList');
+    const ownerList = document.getElementById('pendingPdfsOwnerList');
+    if(!publicList) return;
+
+    publicList.innerHTML = '';
+    if(ownerList) ownerList.innerHTML = '';
+
+    let allPdfs = JSON.parse(localStorage.getItem('studentSharedPdfs') || '[]');
+
+    let approvedCount = 0;
+    allPdfs.forEach(pdf => {
+        if(pdf.approved) {
+            approvedCount++;
+            const card = document.createElement('div');
+            card.className = 'pdf-card';
+            card.innerHTML = `
+                <h5>📄 ${pdf.title}</h5>
+                <p>${pdf.desc}</p>
+                <span style="font-size:0.75rem; color:var(--secondary); display:block; margin-bottom:0.5rem;">👤 بواسطة: ${pdf.author}</span>
+                <a href="${pdf.url}" target="_blank" class="btn btn-success">⬇️ تحميل PDF</a>
+            `;
+            publicList.appendChild(card);
+        } else if(ownerList) {
+            const item = document.createElement('div');
+            item.style.cssText = "background:var(--bg-main); padding:0.8rem; border-radius:8px; border:1px solid var(--border); margin-bottom:0.5rem;";
+            item.innerHTML = `
+                <strong style="color:var(--primary);">${pdf.title}</strong>
+                <p style="font-size:0.8rem; color:var(--text-muted);">${pdf.desc} (من: ${pdf.author})</p>
+                <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
+                    <button class="btn btn-success" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="approvePdf(${pdf.id})">✔️ موافقة ونشر</button>
+                    <button class="btn btn-danger" style="padding:0.3rem 0.8rem; font-size:0.8rem;" onclick="deletePdf(${pdf.id})">❌ رفض وحذف</button>
+                </div>
+            `;
+            ownerList.appendChild(item);
+        }
+    });
+
+    if(approvedCount === 0) {
+        publicList.innerHTML = `<p style="font-size:0.85rem; color:var(--text-muted);">لا توجد ملازم مرفوعة من الطلاب حالياً. كن أول من يشارك ملزمته!</p>`;
+    }
+}
+
+function approvePdf(id) {
+    let allPdfs = JSON.parse(localStorage.getItem('studentSharedPdfs') || '[]');
+    const pdf = allPdfs.find(p => p.id === id);
+    if(pdf) {
+        pdf.approved = true;
+        localStorage.setItem('studentSharedPdfs', JSON.stringify(allPdfs));
+        loadStudentPdfs();
+        alert('✅ تم قبول الملزمة ونشرها في القسم العام بنجاح!');
+    }
+}
+
+function deletePdf(id) {
+    let allPdfs = JSON.parse(localStorage.getItem('studentSharedPdfs') || '[]');
+    allPdfs = allPdfs.filter(p => p.id !== id);
+    localStorage.setItem('studentSharedPdfs', JSON.stringify(allPdfs));
+    loadStudentPdfs();
+}
 
 function switchAuthView(view) {
     document.getElementById('loginFormSection').classList.add('hidden');
@@ -361,60 +520,3 @@ function appendChatMessage(name, role, avatar, text, plan) {
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
-
-// 🌐 نظام دعم اللغة (العربية والإنجليزية)
-let currentLang = localStorage.getItem('siteLang') || 'ar';
-
-const translations = {
-    ar: {
-        siteTitle: "موقع طلاب العراق 🇮🇶",
-        siteSub: "المنصة الرسمية للخدمات الطلابية والملازم الشاملة",
-        homeBtn: "🏠 الصفحة الرئيسية والأخبار",
-        loginBtn: "👤 حساب الطالب وتسجيل الدخول",
-        pdfBtn: "📚 مكتبة الملازم والوزاريات",
-        servicesBtn: "🎓 الخدمات وحاسبة المعدل",
-        chatBtn: "💬 الشات العام للطلاب",
-        plansBtn: "💎 خطط الاشتراكات (بلس وبرو)",
-        infoBtn: "📌 القرارات والاتصال بالمالك",
-        ownerBtn: "🔐 لوحة تحكم المالك الخاصة",
-        themeBtn: "🌙 / ☀️ تبديل الوضع",
-        langBtn: "🌐 العربية / English"
-    },
-    en: {
-        siteTitle: "Iraq Students Portal 🇮🇶",
-        siteSub: "The Official Platform for Student Services & Comprehensive PDFs",
-        homeBtn: "🏠 Home & News",
-        loginBtn: "👤 Student Account & Login",
-        pdfBtn: "📚 PDFs & Ministerial Library",
-        servicesBtn: "🎓 Services & GPA Calculator",
-        chatBtn: "💬 Public Student Chat",
-        plansBtn: "💎 Subscription Plans (Plus & Pro)",
-        infoBtn: "📌 Decisions & Contact Owner",
-        ownerBtn: "🔐 Owner Dashboard",
-        themeBtn: "🌙 / ☀️ Toggle Theme",
-        langBtn: "🌐 English / العربية"
-    }
-};
-
-function toggleLanguage() {
-    currentLang = currentLang === 'ar' ? 'en' : 'ar';
-    localStorage.setItem('siteLang', currentLang);
-    applyLanguage();
-}
-
-function applyLanguage() {
-    const t = translations[currentLang];
-    document.documentElement.lang = currentLang;
-    document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
-    
-    // تحديث النصوص الرئيسية بسلاسة
-    const headerTitle = document.querySelector('header h1');
-    const headerSub = document.querySelector('header p');
-    if(headerTitle) headerTitle.innerText = t.siteTitle;
-    if(headerSub) headerSub.innerText = t.siteSub;
-}
-
-// تنفيذ اللغة عند تحميل الصفحة
-window.addEventListener('DOMContentLoaded', () => {
-    applyLanguage();
-});
